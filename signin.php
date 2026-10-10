@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button type="submit" class="btn btn-primary w-100 mb-3">Sign In</button>
                         <div class="d-flex justify-content-between">
                             <a href="forgot_password.php" class="text-decoration-none">Forgot Password?</a>
-                            <a href="signup.html" class="text-decoration-none">Create Account</a>
+                            <a href="save.php" class="text-decoration-none">Create Account</a>
                         </div>
                     </form>
                 </div>
