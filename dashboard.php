@@ -330,7 +330,7 @@ if ($tx_query) {
                         <input type="hidden" name="payment_method" value="Bank Wire Transfer">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Enter Amount Deposited ($)</label>
-                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="1000.00" required>
+                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="enter amount" required>
                         </div>
                         <input type="hidden" name="extra_details" value="Wire Transfer to Acc: 1234567789">
                         <button type="submit" class="btn btn-success w-100 fw-bold py-2">I Have Made Payment</button>
@@ -348,7 +348,7 @@ if ($tx_query) {
                         <input type="hidden" name="payment_method" value="PayPal / Zelle / Cash App / Chime">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Enter Amount Sent ($)</label>
-                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="500.00" required>
+                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="enter amount" required>
                         </div>
                         <input type="hidden" name="extra_details" value="Sent to payment@wsosinvestment.com">
                         <button type="submit" class="btn btn-success w-100 fw-bold py-2">I Have Made Payment</button>
@@ -366,7 +366,7 @@ if ($tx_query) {
                         <input type="hidden" name="payment_method" value="Crypto (Bitcoin/USDT)">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Enter Amount Sent ($)</label>
-                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="1000.00" required>
+                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="enter amount" required>
                         </div>
                         <input type="hidden" name="extra_details" value="Crypto Wallet: ghghbchja16372nndnbb">
                         <button type="submit" class="btn btn-success w-100 fw-bold py-2">I Have Made Payment</button>
@@ -404,7 +404,7 @@ if ($tx_query) {
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Card Amount ($)</label>
-                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="250.00" required>
+                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="enter amount" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Gift Card Code / PIN</label>
@@ -500,9 +500,9 @@ if ($tx_query) {
                 </div>
                 <div class="col-md-4 mb-3">
                     <div class="section-card text-center h-100">
-                        <h5 class="fw-bold">S&P 500 ETF (SPY)</h5>
+                        <h5 class="fw-bold">World Strategic Oil Supply (WSOS)</h5>
                         <p class="text-muted small">Top 500 US Market Index</p>
-                        <h4 class="text-success fw-bold mb-3">$450.00 / share</h4>
+                        <h4 class="text-success fw-bold mb-3">$0.0000026 / share</h4>
                         <button onclick="openPurchaseModal('S&P 500 ETF (SPY)')" class="btn btn-primary btn-sm w-100">Purchase Asset</button>
                     </div>
                 </div>
