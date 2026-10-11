@@ -8,11 +8,12 @@ if (!isset($conn) || $conn->connect_error) {
     die("Error: Database connection is not available. Check db.php.");
 }
 
-// Self-healing database sync (Safely adds only missing columns)
+// Ensure table and all required columns exist dynamically
 $required_columns = [
     "firstname"      => "VARCHAR(100) DEFAULT NULL",
     "middlename"     => "VARCHAR(100) DEFAULT NULL",
     "lastname"       => "VARCHAR(100) DEFAULT NULL",
+    "fullname"       => "VARCHAR(255) DEFAULT NULL",
     "username"       => "VARCHAR(100) DEFAULT NULL",
     "phone"          => "VARCHAR(50) DEFAULT NULL",
     "dob"            => "DATE DEFAULT NULL",
@@ -31,7 +32,6 @@ $required_columns = [
 ];
 
 foreach ($required_columns as $col => $definition) {
-    // Check if column exists first to avoid duplicate exceptions
     $result = $conn->query("SHOW COLUMNS FROM users LIKE '$col'");
     if ($result && $result->num_rows == 0) {
         $conn->query("ALTER TABLE users ADD COLUMN $col $definition");
