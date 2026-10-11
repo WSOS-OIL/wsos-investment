@@ -7,15 +7,39 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Fetch live user balance, profit, and status from database
 $user_id =$_SESSION['user_id'];
-$stmt =$conn->prepare("SELECT balance, profit, account_status FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);$stmt->execute();
-$user_data =$stmt->get_result()->fetch_assoc();
 
-$balance =$user_data['balance'] ?? 0.00;
-$profit  =$user_data['profit'] ?? 0.00;
-$status  =$user_data['account_status'] ?? 'Active';
+// Default values
+$balance = 0.00;
+$profit  = 0.00;
+$status  = 'Active';
+
+// Check which columns exist in the 'users' table
+$existing_columns = [];
+$columns_query =$conn->query("SHOW COLUMNS FROM users");
+if ($columns_query) {
+    while ($col =$columns_query->fetch_assoc()) {
+        $existing_columns[] =$col['Field'];
+    }
+}
+
+// Dynamically build SELECT query based on existing columns
+$select_fields = [];
+if (in_array('balance', $existing_columns))$select_fields[] = 'balance';
+if (in_array('profit', $existing_columns))$select_fields[] = 'profit';
+if (in_array('account_status', $existing_columns))$select_fields[] = 'account_status';
+
+if (!empty($select_fields)) {$field_sql = implode(', ', $select_fields);$stmt = $conn->prepare("SELECT $field_sql FROM users WHERE id = ?");
+    if ($stmt) {$stmt->bind_param("i", $user_id);$stmt->execute();
+        $user_data =$stmt->get_result()->fetch_assoc();
+        if ($user_data) {
+            if (isset($user_data['balance'])) $balance =$user_data['balance'];
+            if (isset($user_data['profit'])) $profit =$user_data['profit'];
+            if (isset($user_data['account_status'])) $status =$user_data['account_status'];
+        }
+        $stmt->close();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -74,7 +98,7 @@ $status  =$user_data['account_status'] ?? 'Active';
     <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
         <div>
             <h2 class="fw-bold text-dark mb-0" style="letter-spacing: 1px;">WSOS INVESTMENT</h2>
-            <small class="text-muted">Logged in as: <strong><?php echo htmlspecialchars($_SESSION['user_name']); ?></strong></small>
+            <small class="text-muted">Logged in as: <strong><?php echo htmlspecialchars($_SESSION['user_name'] ?? 'User'); ?></strong></small>
         </div>
         <div>
             <span class="badge bg-success p-2 me-3">Account: <?php echo htmlspecialchars($status); ?></span>
@@ -338,7 +362,7 @@ $status  =$user_data['account_status'] ?? 'Active';
             <div class="section-card">
                 <h4 class="fw-bold text-dark mb-3">Live Support & Advisory Chat</h4>
                 <div class="chat-box mb-3" id="chatWindow">
-                    <div class="mb-2"><strong>WSOS Advisor:</strong> Hello <?php echo htmlspecialchars($_SESSION['user_name']); ?>! How can our advisory desk assist you today?</div>
+                    <div class="mb-2"><strong>WSOS Advisor:</strong> Hello <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'User'); ?>! How can our advisory desk assist you today?</div>
                 </div>
                 <div class="input-group">
                     <input type="text" id="chatInput" class="form-control" placeholder="Type your message here...">
@@ -377,161 +401,4 @@ $status  =$user_data['account_status'] ?? 'Active';
 
             <!-- Asset Pay: P2P -->
             <div id="assetP2PDetails" class="p-3 bg-light border rounded mb-3" style="display:none;">
-                <p class="mb-0"><strong>Payment Email:</strong> <code>payment@wsosinvestment.com</code></p>
-            </div>
-
-            <!-- Asset Pay: Gift Cards List -->
-            <div id="assetGiftcardDetails" class="mb-3" style="display:none;">
-                <label class="form-label fw-semibold">Select Gift Card</label>
-                <select class="form-select" id="assetGiftCardSelect">
-                    <option value="Amazon">Amazon Gift Card</option><option value="Apple">Apple / iTunes Gift Card</option>
-                    <option value="Visa">Visa eGift Card</option><option value="Mastercard">Mastercard Gift Card</option>
-                    <option value="American Express">American Express Gift Card</option><option value="Steam">Steam Wallet Card</option>
-                    <option value="Google Play">Google Play Gift Card</option><option value="Walmart">Walmart Gift Card</option>
-                    <option value="Target">Target Gift Card</option><option value="eBay">eBay Gift Card</option>
-                    <option value="Best Buy">Best Buy Gift Card</option><option value="Starbucks">Starbucks Gift Card</option>
-                    <option value="Home Depot">Home Depot Gift Card</option><option value="Lowe's">Lowe's Gift Card</option>
-                    <option value="Sephora">Sephora Gift Card</option><option value="Ulta">Ulta Beauty Gift Card</option><option value="Nike">Nike Gift Card</option>
-                    <option value="Nordstrom">Nordstrom Gift Card</option><option value="Macy's">Macy's Gift Card</option>
-                    <option value="Kohl's">Kohl's Gift Card</option><option value="PlayStation">PlayStation Store Card</option>
-                    <option value="Xbox">Xbox Gift Card</option><option value="Nintendo">Nintendo eShop Card</option>
-                    <option value="Roblox">Roblox Gift Card</option><option value="Uber">Uber / Uber Eats Card</option>
-                    <option value="DoorDash">DoorDash Gift Card</option><option value="Grubhub">Grubhub Gift Card</option>
-                    <option value="Airbnb">Airbnb Gift Card</option><option value="Delta">Delta Air Lines Gift Card</option>
-                    <option value="Southwest">Southwest Airlines Card</option><option value="Hotels.com">Hotels.com Gift Card</option>
-                    <option value="GameStop">GameStop Gift Card</option><option value="Chipotle">Chipotle Gift Card</option>
-                    <option value="Subway">Subway Gift Card</option><option value="Domino's">Domino's Pizza Card</option>
-                    <option value="Dunkin'">Dunkin' Gift Card</option><option value="Olive Garden">Olive Garden Card</option>
-                    <option value="Texas Roadhouse">Texas Roadhouse Card</option><option value="Bed Bath & Beyond">Bed Bath & Beyond</option>
-                    <option value="TJ Maxx">TJ Maxx / Marshalls Card</option><option value="Gap">Gap / Old Navy Card</option>
-                    <option value="Foot Locker">Foot Locker Gift Card</option><option value="Lululemon">Lululemon Gift Card</option>
-                    <option value="CVS">CVS Pharmacy Card</option><option value="Walgreens">Walgreens Gift Card</option>
-                    <option value="Bass Pro Shops">Bass Pro Shops / Cabela's</option><option value="REI">REI Co-op Gift Card</option>
-                    <option value="Disney">Disney Gift Card</option><option value="Cinemark">Cinemark Theatres Card</option>
-                    <option value="AMC">AMC Theatres Gift Card</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Amount ($)</label>
-                <input type="number" step="0.01" class="form-control" placeholder="1000.00" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100 fw-bold">Submit Purchase Order</button>
-        </form>
-
-        <div id="assetSuccessAlert" class="alert alert-success mt-3 text-center fw-bold" style="display:none;">
-            Your order has been received. We will get back with you. Your balance will be updated once your order has been received.
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Bootstrap JS Bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // Investment Chart
-    const ctx = document.getElementById('investmentChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-            datasets: [{
-                label: 'Portfolio Value ($)',
-                data: [5000, 6300, 7200, 8500, 9200, 10400, 11100, 11600, 12000, 12450],
-                borderColor: '#2c5364',
-                backgroundColor: 'rgba(44, 83, 100, 0.12)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.35
-            }]
-        },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-    });
-
-    // Switch Deposit Method
-    function switchDepositMethod() {
-        const method = document.getElementById('depositMethod').value;
-        document.getElementById('wireDetails').style.display = (method === 'wire') ? 'block' : 'none';
-        document.getElementById('p2pDetails').style.display = (method === 'p2p') ? 'block' : 'none';
-        document.getElementById('cryptoDetails').style.display = (method === 'crypto') ? 'block' : 'none';
-        document.getElementById('giftcardDetails').style.display = (method === 'giftcard') ? 'block' : 'none';
-        document.getElementById('paymentStatusAlert').style.display = 'none';
-    }
-
-    // Switch Withdrawal Method
-    function switchWithdrawMethod() {
-        const method = document.getElementById('withdrawMethod').value;
-        const bankFields = document.getElementById('withdrawBankFields');
-        const cryptoFields = document.getElementById('withdrawCryptoFields');
-        const emailFields = document.getElementById('withdrawEmailFields');
-        const emailLabel = document.getElementById('withdrawEmailLabel');
-
-        bankFields.style.display = 'none';
-        cryptoFields.style.display = 'none';
-        emailFields.style.display = 'none';
-
-        if (method === 'wire') {
-            bankFields.style.display = 'block';
-        } else if (method === 'crypto') {
-            cryptoFields.style.display = 'block';
-        } else {
-            emailFields.style.display = 'block';
-            emailLabel.innerText = method.toUpperCase() + ' Email / Username / Phone';
-        }
-    }
-
-    // Handle Payment Done
-    function handlePaymentDone(type) {
-        const alertBox = document.getElementById('paymentStatusAlert');
-        alertBox.style.display = 'block';
-        alertBox.className = 'alert alert-success mt-3 text-center fw-bold';
-        alertBox.innerHTML = "We will review your transaction.";
-    }
-
-    // Open Asset Modal
-    let modalInstance;
-    function openPurchaseModal(assetName) {
-        document.getElementById('modalAssetName').innerText = 'Purchase ' + assetName;
-        document.getElementById('assetSuccessAlert').style.display = 'none';
-        document.getElementById('assetPurchaseForm').style.display = 'block';
-        modalInstance = new bootstrap.Modal(document.getElementById('assetModal'));
-        modalInstance.show();
-    }
-
-    // Switch Asset Pay Method inside Modal
-    function switchAssetPayMethod() {
-        const method = document.getElementById('assetPayMethod').value;
-        document.getElementById('assetWireDetails').style.display = (method === 'bank') ? 'block' : 'none';
-        document.getElementById('assetP2PDetails').style.display = (method === 'p2p') ? 'block' : 'none';
-        document.getElementById('assetGiftcardDetails').style.display = (method === 'giftcard') ? 'block' : 'none';
-    }
-
-    // Submit Asset Purchase
-    function submitAssetPurchase(e) {
-        e.preventDefault();
-        document.getElementById('assetPurchaseForm').style.display = 'none';
-        document.getElementById('assetSuccessAlert').style.display = 'block';
-    }
-
-    // Chat function
-    function sendMessage() {
-        const input = document.getElementById('chatInput');
-        const chatWindow = document.getElementById('chatWindow');
-        if (input.value.trim() !== '') {
-            chatWindow.innerHTML += `<div class="mb-2 text-end"><strong>You:</strong> ${input.value}</div>`;
-            const userMsg = input.value;
-            input.value = '';
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-            
-            setTimeout(() => {
-                chatWindow.innerHTML += `<div class="mb-2 text-primary"><strong>WSOS Advisor:</strong> Thank you for your inquiry regarding "${userMsg}". Our compliance desk is reviewing your portfolio details.</div>`;
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }, 1000);
-        }
-    }
-</script>
-
-</body>
-</html>
+                <p class="mb-0"><strong>Payment Email:</strong> <code>payment@wsosinvestment.com</code></p
