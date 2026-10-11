@@ -14,7 +14,7 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
             padding: 40px;
             width: 100%;
-            max-width: 800px;
+            max-width: 850px;
         }
         .section-header {
             color: #2c5364;
@@ -37,7 +37,7 @@
 
     <form action="save.php" method="POST" enctype="multipart/form-data">
         
-        <!-- SECTION 1: Personal Details -->
+        <!-- SECTION 1: Personal Information -->
         <div class="section-header">1. Personal Information</div>
         
         <div class="row">
@@ -96,25 +96,36 @@
         <div class="row">
             <div class="col-md-12 mb-3">
                 <label for="street_address" class="form-label fw-semibold">Street Address</label>
-                <input type="text" class="form-control" id="street_address" name="street_address" placeholder="123 Financial Way, Suite 400" required>
+                <input type="text" class="form-control" id="street_address" name="street_address" placeholder="123 Financial Way, Apt 4B" required>
             </div>
         </div>
 
         <div class="row">
             <div class="col-md-4 mb-3">
                 <label for="city" class="form-label fw-semibold">City</label>
-                <input type="text" class="form-control" id="city" name="city" placeholder="New York" required>
+                <input type="text" class="form-control" id="city" name="city" placeholder="e.g. New York, Los Angeles, Chicago" required>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="state" class="form-label fw-semibold">State / Province</label>
                 <select class="form-select" id="state" name="state" required>
-                    <option value="" disabled selected>Select State</option>
-                    <option value="AL">Alabama</option>
-                    <option value="CA">California</option>
-                    <option value="FL">Florida</option>
-                    <option value="NY">New York</option>
-                    <option value="TX">Texas</option>
-                    <option value="Other">Other / International</option>
+                    <option value="" disabled selected>Select U.S. State</option>
+                    <option value="AL">Alabama</option><option value="AK">Alaska</option><option value="AZ">Arizona</option>
+                    <option value="AR">Arkansas</option><option value="CA">California</option><option value="CO">Colorado</option>
+                    <option value="CT">Connecticut</option><option value="DE">Delaware</option><option value="FL">Florida</option>
+                    <option value="GA">Georgia</option><option value="HI">Hawaii</option><option value="ID">Idaho</option>
+                    <option value="IL">Illinois</option><option value="IN">Indiana</option><option value="IA">Iowa</option>
+                    <option value="KS">Kansas</option><option value="KY">Kentucky</option><option value="LA">Louisiana</option>
+                    <option value="ME">Maine</option><option value="MD">Maryland</option><option value="MA">Massachusetts</option>
+                    <option value="MI">Michigan</option><option value="MN">Minnesota</option><option value="MS">Mississippi</option>
+                    <option value="MO">Missouri</option><option value="MT">Montana</option><option value="NE">Nebraska</option>
+                    <option value="NV">Nevada</option><option value="NH">New Hampshire</option><option value="NJ">New Jersey</option>
+                    <option value="NM">New Mexico</option><option value="NY">New York</option><option value="NC">North Carolina</option>
+                    <option value="ND">North Dakota</option><option value="OH">Ohio</option><option value="OK">Oklahoma</option>
+                    <option value="OR">Oregon</option><option value="PA">Pennsylvania</option><option value="RI">Rhode Island</option>
+                    <option value="SC">South Carolina</option><option value="SD">South Dakota</option><option value="TN">Tennessee</option>
+                    <option value="TX">Texas</option><option value="UT">Utah</option><option value="VT">Vermont</option>
+                    <option value="VA">Virginia</option><option value="WA">Washington</option><option value="WV">West Virginia</option>
+                    <option value="WI">Wisconsin</option><option value="WY">Wyoming</option><option value="Non-US">Non-US / International</option>
                 </select>
             </div>
             <div class="col-md-4 mb-3">
@@ -134,12 +145,20 @@
                     <option value="Australia">Australia</option>
                     <option value="Germany">Germany</option>
                     <option value="France">France</option>
-                    <option value="Other">Other</option>
+                    <option value="Switzerland">Switzerland</option>
+                    <option value="Japan">Japan</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="United Arab Emirates">United Arab Emirates</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="Other">Other Country</option>
                 </select>
             </div>
         </div>
 
-        <!-- SECTION 3: Identity Verification (KYC) & Files -->
+        <!-- SECTION 3: Identity Verification (KYC Documents) -->
         <div class="section-header">3. Identity Verification (KYC Documents)</div>
 
         <div class="row">
