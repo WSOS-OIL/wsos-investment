@@ -7,7 +7,7 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Force dark gradient background across html and body */
+        /* Dark gradient theme */
         html, body {
             height: 100%;
             margin: 0;
@@ -97,9 +97,14 @@
             <input type="text" class="form-control" id="email" name="email" placeholder="name@example.com" required>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-2">
             <label for="password" class="form-label fw-semibold">Password</label>
             <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="mb-4 text-end">
+            <a href="forgot_password.php" class="small text-muted">Forgot password?</a>
         </div>
 
         <button type="submit" class="btn btn-primary mb-3">Sign In</button>
