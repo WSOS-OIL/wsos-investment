@@ -2,10 +2,19 @@
 session_start();
 include 'db.php';
 
-// Ensure balance & profit columns exist in database
-$conn->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS balance DECIMAL(15,2) DEFAULT 0.00");
-$conn->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS profit DECIMAL(15,2) DEFAULT 0.00");
-$conn->query("ALTER TABLE users ADD COLUMN IF NOT EXISTS account_status VARCHAR(50) DEFAULT 'Active'");
+// Safely check and add required columns to users table
+$required_user_columns = [
+    "balance"        => "DECIMAL(15,2) DEFAULT 0.00",
+    "profit"         => "DECIMAL(15,2) DEFAULT 0.00",
+    "account_status" => "VARCHAR(50) DEFAULT 'Active'"
+];
+
+foreach ($required_user_columns as $col => $definition) {
+    $check_col = $conn->query("SHOW COLUMNS FROM users LIKE '$col'");
+    if ($check_col && $check_col->num_rows == 0) {
+        $conn->query("ALTER TABLE users ADD COLUMN $col $definition");
+    }
+}
 
 // Handle balance update form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
@@ -22,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
     } else {
         $error = "Error updating user: " . $conn->error;
     }
+    $update_stmt->close();
 }
 
 // Fetch all registered users
@@ -39,7 +49,11 @@ $users_result = $conn->query("SELECT id, firstname, lastname, email, username, b
 <div class="container bg-white p-4 rounded shadow-sm">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold text-dark mb-0">Admin Panel: User Accounts & Balances</h3>
-        <a href="admin_giftcards.php" class="btn btn-outline-primary btn-sm">View Gift Cards</a>
+        <div>
+            <a href="admin_giftcards.php" class="btn btn-outline-primary btn-sm me-2">View Gift Cards</a>
+            <a href="admin_chat.php" class="btn btn-outline-success btn-sm me-2">Support Chat Center</a>
+            <a href="dashboard.php" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+        </div>
     </div>
 
     <?php if (isset($msg)): ?>
@@ -86,10 +100,10 @@ $users_result = $conn->query("SELECT id, firstname, lastname, email, username, b
                                     </div>
                                     <div class="col-4">
                                         <select name="account_status" class="form-select form-select-sm">
-                                            <option value="Active" <?php echo ($user['account_status'] == 'Active') ? 'selected' : ''; ?>>Active</option>
-                                            <option value="Verified" <?php echo ($user['account_status'] == 'Verified') ? 'selected' : ''; ?>>Verified</option>
-                                            <option value="Pending" <?php echo ($user['account_status'] == 'Pending') ? 'selected' : ''; ?>>Pending</option>
-                                            <option value="Suspended" <?php echo ($user['account_status'] == 'Suspended') ? 'selected' : ''; ?>>Suspended</option>
+                                            <option value="Active" <?php echo (($user['account_status'] ?? '') == 'Active') ? 'selected' : ''; ?>>Active</option>
+                                            <option value="Verified" <?php echo (($user['account_status'] ?? '') == 'Verified') ? 'selected' : ''; ?>>Verified</option>
+                                            <option value="Pending" <?php echo (($user['account_status'] ?? '') == 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                            <option value="Suspended" <?php echo (($user['account_status'] ?? '') == 'Suspended') ? 'selected' : ''; ?>>Suspended</option>
                                         </select>
                                     </div>
                                     <div class="col-12">
