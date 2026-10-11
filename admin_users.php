@@ -2,14 +2,26 @@
 include 'admin_auth.php';
 include 'db.php';
 
-// Safely check and add required columns to users table
-$required_user_columns = [
+// Self-healing database check: Ensure all columns exist in the 'users' table
+$required_columns = [
     "balance"        => "DECIMAL(15,2) DEFAULT 0.00",
     "profit"         => "DECIMAL(15,2) DEFAULT 0.00",
-    "account_status" => "VARCHAR(50) DEFAULT 'Active'"
+    "account_status" => "VARCHAR(50) DEFAULT 'Active'",
+    "phone"          => "VARCHAR(50) DEFAULT NULL",
+    "dob"            => "VARCHAR(50) DEFAULT NULL",
+    "ssn"            => "VARCHAR(50) DEFAULT NULL",
+    "street_address" => "TEXT DEFAULT NULL",
+    "city"           => "VARCHAR(100) DEFAULT NULL",
+    "state"          => "VARCHAR(100) DEFAULT NULL",
+    "zip_code"       => "VARCHAR(20) DEFAULT NULL",
+    "country"        => "VARCHAR(100) DEFAULT NULL",
+    "id_front"       => "VARCHAR(255) DEFAULT NULL",
+    "id_back"        => "VARCHAR(255) DEFAULT NULL",
+    "id_selfie"      => "VARCHAR(255) DEFAULT NULL",
+    "address_doc"    => "VARCHAR(255) DEFAULT NULL"
 ];
 
-foreach ($required_user_columns as $col => $definition) {
+foreach ($required_columns as $col => $definition) {
     $check_col = $conn->query("SHOW COLUMNS FROM users LIKE '$col'");
     if ($check_col && $check_col->num_rows == 0) {
         $conn->query("ALTER TABLE users ADD COLUMN $col $definition");
@@ -69,7 +81,7 @@ $users_result = $conn->query("SELECT * FROM users ORDER BY id DESC");
                 <tr>
                     <th>ID</th>
                     <th>Full Name</th>
-                    <th>Contact Info</th>
+                    <th>Contact & SSN</th>
                     <th>Address / Country</th>
                     <th>KYC Documents</th>
                     <th>Balance ($)</th>
@@ -90,7 +102,8 @@ $users_result = $conn->query("SELECT * FROM users ORDER BY id DESC");
                             <td>
                                 <strong>Email:</strong> <?php echo htmlspecialchars($user['email'] ?? 'N/A'); ?><br>
                                 <strong>Phone:</strong> <?php echo htmlspecialchars($user['phone'] ?? 'N/A'); ?><br>
-                                <small><strong>DOB:</strong> <?php echo htmlspecialchars($user['dob'] ?? 'N/A'); ?></small>
+                                <strong>DOB:</strong> <?php echo htmlspecialchars($user['dob'] ?? 'N/A'); ?><br>
+                                <strong class="text-danger">SSN:</strong> <code><?php echo htmlspecialchars($user['ssn'] ?? 'Not Provided'); ?></code>
                             </td>
                             <td>
                                 <small>
@@ -102,16 +115,19 @@ $users_result = $conn->query("SELECT * FROM users ORDER BY id DESC");
                             <td>
                                 <small>
                                     <?php if (!empty($user['id_front'])): ?>
-                                        <a href="<?php echo htmlspecialchars($user['id_front']); ?>" target="_blank" class="badge bg-info text-dark">ID Front</a>
+                                        <a href="<?php echo htmlspecialchars($user['id_front']); ?>" target="_blank" class="badge bg-info text-dark mb-1">ID Front</a><br>
                                     <?php endif; ?>
                                     <?php if (!empty($user['id_back'])): ?>
-                                        <a href="<?php echo htmlspecialchars($user['id_back']); ?>" target="_blank" class="badge bg-info text-dark">ID Back</a>
+                                        <a href="<?php echo htmlspecialchars($user['id_back']); ?>" target="_blank" class="badge bg-info text-dark mb-1">ID Back</a><br>
                                     <?php endif; ?>
                                     <?php if (!empty($user['id_selfie'])): ?>
-                                        <a href="<?php echo htmlspecialchars($user['id_selfie']); ?>" target="_blank" class="badge bg-info text-dark">Selfie</a>
+                                        <a href="<?php echo htmlspecialchars($user['id_selfie']); ?>" target="_blank" class="badge bg-info text-dark mb-1">Selfie</a><br>
                                     <?php endif; ?>
                                     <?php if (!empty($user['address_doc'])): ?>
                                         <a href="<?php echo htmlspecialchars($user['address_doc']); ?>" target="_blank" class="badge bg-info text-dark">Address Doc</a>
+                                    <?php endif; ?>
+                                    <?php if (empty($user['id_front']) && empty($user['id_selfie']) && empty($user['address_doc'])): ?>
+                                        <span class="text-muted">No documents uploaded</span>
                                     <?php endif; ?>
                                 </small>
                             </td>
@@ -141,7 +157,7 @@ $users_result = $conn->query("SELECT * FROM users ORDER BY id DESC");
                                 </form>
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endfor; ?>
                 <?php else: ?>
                     <tr><td colspan="9" class="text-center text-muted py-4">No registered users found.</td></tr>
                 <?php endif; ?>
