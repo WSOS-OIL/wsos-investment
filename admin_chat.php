@@ -1,5 +1,5 @@
 <?php
-session_start();
+include 'admin_auth.php';
 include 'db.php';
 
 // Fetch users with unread support messages
@@ -20,7 +20,7 @@ $users_query =$conn->query("
     <title>Admin Live Support Center</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .chat-history { height: 400px; overflow-y: auto; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; }
+        .chat-history { height: 420px; overflow-y: auto; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; }
         .user-item.active { background-color: #2c5364; color: white; }
     </style>
 </head>
@@ -29,7 +29,11 @@ $users_query =$conn->query("
 <div class="container-fluid bg-white p-4 rounded shadow-sm">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold text-dark mb-0">Admin Support Center</h3>
-        <a href="admin_users.php" class="btn btn-secondary btn-sm">User Balances</a>
+        <div>
+            <a href="admin_users.php" class="btn btn-outline-primary btn-sm me-2">User Balances</a>
+            <a href="admin_giftcards.php" class="btn btn-outline-warning btn-sm me-2">View Gift Cards</a>
+            <a href="dashboard.php" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+        </div>
     </div>
 
     <div class="row">
@@ -51,7 +55,7 @@ $users_query =$conn->query("
                         </button>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <p class="text-muted">No active support conversations.</p>
+                    <p class="text-muted p-3">No active support conversations.</p>
                 <?php endif; ?>
             </div>
         </div>
@@ -78,7 +82,7 @@ $users_query =$conn->query("
 
     function loadUserChat(userId, userName) {
         selectedUserId = userId;
-        document.getElementById('activeChatTitle').innerText = 'Chat with ' + userName + ' (User #' + userId + ')';
+        document.getElementById('activeChatTitle').innerText = 'Chatting with ' + userName + ' (User #' + userId + ')';
         document.getElementById('adminReplyForm').style.display = 'block';
         fetchMessages();
     }
@@ -98,7 +102,7 @@ $users_query =$conn->query("
                             <div class="p-2 rounded mt-1 d-inline-block ${isUser ? 'bg-light border' : 'bg-primary text-white'}">
                                 ${msg.message}
                             </div>
-                            <br><small class="text-muted">${msg.created_at}</small>
+                            <br><small class="text-muted" style="font-size:0.75rem;">${msg.created_at}</small>
                         </div>
                     `;
                 });
@@ -124,7 +128,7 @@ $users_query =$conn->query("
             });
     }
 
-    // Auto-refresh chat every 5 seconds for real-time notifications
+    // Auto-refresh active chat every 5 seconds for real-time messages
     setInterval(fetchMessages, 5000);
 </script>
 
