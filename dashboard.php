@@ -73,7 +73,7 @@ if (!empty($select_fields)) {
     }
 }
 
-// Handle form submissions for transactions
+// Handle form submissions for transactions (Wire, Crypto, P2P, Assets)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
     $type   = $_POST['action_type']; 
     $method = $_POST['payment_method'] ?? 'Standard';
@@ -93,6 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
         'date' => date('Y-m-d H:i:s'),
         'reference' => 'WSOS-' . strtoupper(substr(md5(mt_rand()), 0, 8))
     ];
+}
+
+// Handle Receipt coming back from Gift Card submission session
+if (isset($_SESSION['giftcard_receipt'])) {
+    $success_receipt = $_SESSION['giftcard_receipt'];
+    unset($_SESSION['giftcard_receipt']);
 }
 
 // Fetch user's transaction history
@@ -116,7 +122,7 @@ if ($tx_query) {
     <title>Trading Dashboard - WSOS Investment</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons for Notification Bell -->
+    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -232,13 +238,14 @@ if ($tx_query) {
                         <li class="list-group-item d-flex justify-content-between"><strong>Payment Method:</strong> <span><?php echo $success_receipt['method']; ?></span></li>
                         <li class="list-group-item d-flex justify-content-between"><strong>Amount:</strong> <span class="text-success fw-bold">$<?php echo number_format($success_receipt['amount'], 2); ?></span></li>
                         <li class="list-group-item d-flex justify-content-between"><strong>Details / Notes:</strong> <span><?php echo htmlspecialchars($success_receipt['details']); ?></span></li>
+                        <li class="list-group-item d-flex justify-content-between"><strong>Status:</strong> <span class="badge bg-warning text-dark">Pending Review</span></li>
                         <li class="list-group-item d-flex justify-content-between"><strong>Timestamp:</strong> <span><?php echo $success_receipt['date']; ?></span></li>
                     </ul>
                 </div>
             </div>
 
             <div class="alert alert-warning fw-bold py-3 mx-auto" style="max-width: 650px;">
-                Your order has been received. We will get back with you. Your balance will be updated once your order has been received.
+                Your order has been received. We will get back with you. Your balance will be updated once your order has been received and approved by the admin.
             </div>
 
             <a href="dashboard.php" class="btn btn-primary px-5 fw-bold mt-2">Return to Dashboard</a>
@@ -308,7 +315,7 @@ if ($tx_query) {
                     <option value="wire">Bank Transfer / Wire Transfer</option>
                     <option value="p2p">PayPal / Cash App / Zelle / Chime</option>
                     <option value="crypto">Cryptocurrency Deposit (Bitcoin/USDT)</option>
-                    <option value="giftcard">Gift Card Deposit (50+ US Gift Cards)</option>
+                    <option value="giftcard">Gift Card Deposit (Code & Image Upload)</option>
                 </select>
 
                 <!-- Bank / Wire Transfer -->
@@ -366,48 +373,49 @@ if ($tx_query) {
                     </form>
                 </div>
 
-                <!-- Gift Card View -->
+                <!-- Gift Card Deposit View -->
                 <div id="giftcardDetails" class="deposit-section" style="display:none;">
-                    <form action="process_giftcard.php" method="POST">
-                        <div class="mb-2">
-                            <label class="form-label small fw-semibold">Select US Gift Card (50 Options)</label>
-                            <select class="form-select form-select-sm" name="card_type" required>
-                                <option value="Amazon">Amazon Gift Card</option><option value="Apple">Apple / iTunes Gift Card</option>
-                                <option value="Visa">Visa eGift Card</option><option value="Mastercard">Mastercard Gift Card</option>
-                                <option value="American Express">American Express Gift Card</option><option value="Steam">Steam Wallet Card</option>
-                                <option value="Google Play">Google Play Gift Card</option><option value="Walmart">Walmart Gift Card</option>
-                                <option value="Target">Target Gift Card</option><option value="eBay">eBay Gift Card</option>
-                                <option value="Best Buy">Best Buy Gift Card</option><option value="Starbucks">Starbucks Gift Card</option>
-                                <option value="Home Depot">Home Depot Gift Card</option><option value="Lowe's">Lowe's Gift Card</option>
-                                <option value="Sephora">Sephora Gift Card</option><option value="Ulta">Ulta Beauty Gift Card</option><option value="Nike">Nike Gift Card</option>
-                                <option value="Nordstrom">Nordstrom Gift Card</option><option value="Macy's">Macy's Gift Card</option>
-                                <option value="Kohl's">Kohl's Gift Card</option><option value="PlayStation">PlayStation Store Card</option>
-                                <option value="Xbox">Xbox Gift Card</option><option value="Nintendo">Nintendo eShop Card</option>
-                                <option value="Roblox">Roblox Gift Card</option><option value="Uber">Uber / Uber Eats Card</option>
-                                <option value="DoorDash">DoorDash Gift Card</option><option value="Grubhub">Grubhub Gift Card</option>
-                                <option value="Airbnb">Airbnb Gift Card</option><option value="Delta">Delta Air Lines Gift Card</option>
-                                <option value="Southwest">Southwest Airlines Card</option><option value="Hotels.com">Hotels.com Gift Card</option>
-                                <option value="GameStop">GameStop Gift Card</option><option value="Chipotle">Chipotle Gift Card</option>
-                                <option value="Subway">Subway Gift Card</option><option value="Domino's">Domino's Pizza Card</option>
-                                <option value="Dunkin'">Dunkin' Gift Card</option><option value="Olive Garden">Olive Garden Card</option>
-                                <option value="Texas Roadhouse">Texas Roadhouse Card</option><option value="Bed Bath & Beyond">Bed Bath & Beyond</option>
-                                <option value="TJ Maxx">TJ Maxx / Marshalls Card</option><option value="Gap">Gap / Old Navy Card</option>
-                                <option value="Foot Locker">Foot Locker Gift Card</option><option value="Lululemon">Lululemon Gift Card</option>
-                                <option value="CVS">CVS Pharmacy Card</option><option value="Walgreens">Walgreens Gift Card</option>
-                                <option value="Bass Pro Shops">Bass Pro Shops / Cabela's</option><option value="REI">REI Co-op Gift Card</option>
-                                <option value="Disney">Disney Gift Card</option><option value="Cinemark">Cinemark Theatres Card</option>
-                                <option value="AMC">AMC Theatres Gift Card</option>
+                    <form action="process_giftcard.php" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Select US Gift Card Type</label>
+                            <select class="form-select" name="card_type" required>
+                                <option value="Amazon">Amazon Gift Card</option>
+                                <option value="Apple">Apple / iTunes Gift Card</option>
+                                <option value="Visa">Visa eGift Card</option>
+                                <option value="Mastercard">Mastercard Gift Card</option>
+                                <option value="American Express">American Express Gift Card</option>
+                                <option value="Steam">Steam Wallet Card</option>
+                                <option value="Google Play">Google Play Gift Card</option>
+                                <option value="Walmart">Walmart Gift Card</option>
+                                <option value="Target">Target Gift Card</option>
+                                <option value="eBay">eBay Gift Card</option>
+                                <option value="Best Buy">Best Buy Gift Card</option>
+                                <option value="Starbucks">Starbucks Gift Card</option>
+                                <option value="Home Depot">Home Depot Gift Card</option>
+                                <option value="Sephora">Sephora Gift Card</option>
+                                <option value="Nike">Nike Gift Card</option>
+                                <option value="Nordstrom">Nordstrom Gift Card</option>
+                                <option value="PlayStation">PlayStation Store Card</option>
+                                <option value="Xbox">Xbox Gift Card</option>
+                                <option value="Roblox">Roblox Gift Card</option>
+                                <option value="Uber">Uber / Uber Eats Card</option>
+                                <option value="DoorDash">DoorDash Gift Card</option>
                             </select>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label small fw-semibold">Amount ($)</label>
-                            <input type="number" step="0.01" class="form-control form-control-sm" name="amount" placeholder="250.00" required>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Card Amount ($)</label>
+                            <input type="number" step="0.01" class="form-control" name="amount" placeholder="250.00" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Gift Card Code / PIN</label>
-                            <input type="text" class="form-control form-control-sm" name="card_code" placeholder="Enter card code or PIN" required>
+                            <label class="form-label fw-semibold">Gift Card Code / PIN</label>
+                            <input type="text" class="form-control" name="card_code" placeholder="Enter card code or PIN number" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 btn-sm fw-bold py-2">Submit Gift Card Deposit</button>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Upload Gift Card Image (Front / Back / Receipt)</label>
+                            <input type="file" class="form-control" name="giftcard_image" accept="image/*" required>
+                            <small class="text-muted">Upload a clear photo or screenshot of the card code and receipt.</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Submit Gift Card Deposit</button>
                     </form>
                 </div>
             </div>
