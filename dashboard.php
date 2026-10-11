@@ -14,7 +14,7 @@ $balance = 0.00;
 $profit  = 0.00;
 $status  = 'Active';
 
-// Ensure necessary database columns exist
+// Ensure necessary database tables exist
 $conn->query("CREATE TABLE IF NOT EXISTS user_transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -551,7 +551,15 @@ if ($tx_query) {
                                         <td><?php echo htmlspecialchars($tx['method']); ?></td>
                                         <td class="fw-bold text-success">$<?php echo number_format($tx['amount'], 2); ?></td>
                                         <td><small><?php echo htmlspecialchars($tx['details']); ?></small></td>
-                                        <td><span class="badge bg-warning text-dark"><?php echo $tx['status']; ?></span></td>
+                                        <td>
+                                            <?php 
+                                                $status_badge = 'bg-warning text-dark';
+                                                if ($tx['status'] === 'Approved' || $tx['status'] === 'Completed')$status_badge = 'bg-success';
+                                                if ($tx['status'] === 'Processing')$status_badge = 'bg-info text-dark';
+                                                if ($tx['status'] === 'Rejected' || $tx['status'] === 'Failed')$status_badge = 'bg-danger';
+                                            ?>
+                                            <span class="badge <?php echo $status_badge; ?>"><?php echo htmlspecialchars($tx['status']); ?></span>
+                                        </td>
                                         <td><small><?php echo $tx['created_at']; ?></small></td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -749,9 +757,9 @@ if ($tx_query) {
                     data.forEach(msg => {
                         const isUser = msg.sender === 'user';
                         html += `
-                            <div class="mb-2 ${isUser ? 'text-end' : 'text-start'}">
+                            <div class="mb-3 ${isUser ? 'text-end' : 'text-start'}">
                                 <span class="badge ${isUser ? 'bg-secondary' : 'bg-primary'}">${isUser ? 'You' : 'WSOS Advisor'}</span>
-                                <div class="p-2 rounded mt-1 d-inline-block ${isUser ? 'bg-primary text-white' : 'bg-light border'}">
+                                <div class="p-2 px-3 rounded mt-1 d-inline-block ${isUser ? 'bg-primary text-white' : 'bg-light border'}">
                                     ${msg.message}
                                 </div>
                                 <br><small class="text-muted" style="font-size: 0.75rem;">${msg.created_at}</small>
@@ -780,8 +788,8 @@ if ($tx_query) {
             });
     }
 
-    // Poll chat messages and notification badges every 5 seconds
-    setInterval(fetchUserMessages, 5000);
+    // Poll chat messages and notification badges every 4 seconds
+    setInterval(fetchUserMessages, 4000);
     fetchUserMessages();
 </script>
 
