@@ -62,9 +62,10 @@ $users_result = $conn->query("SELECT * FROM users ORDER BY id DESC");
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold text-dark mb-0">Admin Panel: Registered Users & KYC Entries</h3>
         <div>
-            <a href="admin_giftcards.php" class="btn btn-outline-primary btn-sm me-2">View Gift Cards</a>
-            <a href="admin_chat.php" class="btn btn-outline-success btn-sm me-2">Support Chat Center</a>
-            <a href="dashboard.php" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+            <a href="admin_transactions.php" class="btn btn-outline-info btn-sm me-2">Transactions</a>
+            <a href="admin_giftcards.php" class="btn btn-outline-warning btn-sm me-2">Gift Cards</a>
+            <a href="admin_chat.php" class="btn btn-outline-success btn-sm me-2">Support Chat</a>
+            <a href="dashboard.php" class="btn btn-secondary btn-sm">Dashboard</a>
         </div>
     </div>
 
@@ -127,7 +128,7 @@ $users_result = $conn->query("SELECT * FROM users ORDER BY id DESC");
                                         <a href="<?php echo htmlspecialchars($user['address_doc']); ?>" target="_blank" class="badge bg-info text-dark">Address Doc</a>
                                     <?php endif; ?>
                                     <?php if (empty($user['id_front']) && empty($user['id_selfie']) && empty($user['address_doc'])): ?>
-                                        <span class="text-muted">No documents uploaded</span>
+                                        <span class="text-muted">No documents</span>
                                     <?php endif; ?>
                                 </small>
                             </td>
@@ -157,7 +158,7 @@ $users_result = $conn->query("SELECT * FROM users ORDER BY id DESC");
                                 </form>
                             </td>
                         </tr>
-                    <?php endfor; ?>
+                    <?php endwhile; ?>
                 <?php else: ?>
                     <tr><td colspan="9" class="text-center text-muted py-4">No registered users found.</td></tr>
                 <?php endif; ?>
