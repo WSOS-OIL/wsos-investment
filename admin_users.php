@@ -1,5 +1,5 @@
 <?php
-session_start();
+include 'admin_auth.php';
 include 'db.php';
 
 // Safely check and add required columns to users table
@@ -18,7 +18,7 @@ foreach ($required_user_columns as $col => $definition) {
 
 // Handle balance update form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_user'])) {
-    $target_id = $_POST['user_id'];
+    $target_id   = $_POST['user_id'];
     $new_balance = $_POST['balance'];
     $new_profit  = $_POST['profit'];
     $new_status  = $_POST['account_status'];
@@ -80,7 +80,7 @@ $users_result = $conn->query("SELECT id, firstname, lastname, email, username, b
                 <?php if ($users_result && $users_result->num_rows > 0): ?>
                     <?php while($user = $users_result->fetch_assoc()): ?>
                         <tr>
-                            <td><?php echo $user['id']; ?></td>
+                            <td>#<?php echo $user['id']; ?></td>
                             <td><strong><?php echo htmlspecialchars(($user['firstname'] ?? '') . ' ' . ($user['lastname'] ?? '')); ?></strong></td>
                             <td>
                                 <?php echo htmlspecialchars($user['email']); ?><br>
@@ -107,14 +107,14 @@ $users_result = $conn->query("SELECT id, firstname, lastname, email, username, b
                                         </select>
                                     </div>
                                     <div class="col-12">
-                                        <button type="submit" name="update_user" class="btn btn-sm btn-success w-100 mt-1">Save Changes</button>
+                                        <button type="submit" name="update_user" class="btn btn-sm btn-success w-100 mt-1 fw-bold">Save Changes</button>
                                     </div>
                                 </form>
                             </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <tr><td colspan="7" class="text-center text-muted">No registered users found.</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4">No registered users found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
